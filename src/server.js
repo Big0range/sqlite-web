@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { createApp } from './app.js';
 
-const port = Number.parseInt(process.env.PORT, 10) || 3000;
+const port = Number.parseInt(process.env.PORT, 10) || 3303;
 const app = createApp({
   registryPath: resolve('data', 'databases.json'),
   authPath: resolve('auth.json')

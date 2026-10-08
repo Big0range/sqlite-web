@@ -356,14 +356,11 @@ document.addEventListener("click", async (event) => {
   }
 });
 
-document.addEventListener("input", (event) => {
-  if (event.target.id === "search-input") {
-    window.clearTimeout(event.target.searchTimer);
-    event.target.searchTimer = window.setTimeout(async () => {
-      state.search = event.target.value;
-      state.page = 1;
-      await loadTableData();
-    }, 300);
+document.addEventListener("keydown", async (event) => {
+  if (event.target.id === "search-input" && event.key === "Enter") {
+    state.search = event.target.value;
+    state.page = 1;
+    await loadTableData();
   }
 });
 

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQLite 管理台</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#/">SQLite <span>管理台</span></a>
+      <p>连接服务器上已有的数据库文件</p>
+      <button
+        id="logout-button"
+        class="button button-secondary"
+        type="button"
+      >
+        退出登录
+      </button>
+      <button
+        id="add-database-button"
+        class="button button-primary"
+        type="button"
+      >
+        登记数据库
+      </button>
+    </header>
+    <main class="layout">
+      <aside class="sidebar" aria-label="数据库导航">
+        <div class="sidebar-heading">
+          <span>已登记数据库</span>
+          <button
+            id="refresh-databases-button"
+            class="icon-button"
+            type="button"
+            title="刷新数据库列表"
+            aria-label="刷新数据库列表"
+          >
+            ↻
+          </button>
+        </div>
+        <nav id="database-list" class="database-list"></nav>
+      </aside>
+      <section class="workspace">
+        <div
+          id="message"
+          class="message"
+          role="status"
+          aria-live="polite"
+        ></div>
+        <section id="welcome-view" class="empty-view">
+          <span class="eyebrow">本地优先 · 直接操作</span>
+          <h1>管理服务器上的 SQLite 数据库</h1>
+          <p>
+            登记一个已经存在的 <code>.db</code>、<code>.sqlite</code> 或
+            <code>.sqlite3</code>
+            文件，即可浏览数据表并对有主键的记录进行增删改查。
+          </p>
+          <button
+            class="button button-primary"
+            data-open-dialog="database-dialog"
+            type="button"
+          >
+            登记第一个数据库
+          </button>
+        </section>
+        <section id="database-view" class="hidden">
+          <div class="database-header">
+            <div>
+              <span id="database-path" class="eyebrow"></span>
+              <h1 id="database-title"></h1>
+            </div>
+            <div class="header-actions">
+              <button
+                id="add-table-button"
+                class="button button-secondary"
+                type="button"
+              >
+                新建数据表
+              </button>
+              <button
+                id="remove-database-button"
+                class="button button-danger"
+                type="button"
+              >
+                取消登记
+              </button>
+            </div>
+          </div>
+          <div class="database-content">
+            <aside class="table-sidebar">
+              <div class="table-heading">
+                <span>数据表</span><span id="table-count" class="count"></span>
+              </div>
+              <nav id="table-list" class="table-list"></nav>
+            </aside>
+            <section id="table-view" class="table-workspace">
+              <div class="empty-table">从左侧选择一个数据表喵</div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="database-dialog">
+      <form id="database-form" method="dialog" class="dialog-card">
+        <div class="dialog-header">
+          <div>
+            <span class="eyebrow">服务器文件</span>
+            <h2>登记 SQLite 数据库</h2>
+          </div>
+          <button
+            class="icon-button"
+            type="button"
+            data-close-dialog
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </div>
+        <p>可填写服务器路径（支持相对路径）或上传本地 SQLite 文件。文件仅会在点击“登记并打开”后上传。</p>
+        <label
+          >显示名称<input
+            name="name"
+            required
+            maxlength="80"
+            placeholder="例如：订单库"
+        /></label>
+        <fieldset class="registration-source">
+          <legend>数据库来源</legend>
+          <label
+            ><input name="source" type="radio" value="path" checked /> 填写服务器路径</label
+          ><label
+            ><input name="source" type="radio" value="upload" /> 上传本地文件</label
+          >
+        </fieldset>
+        <label id="database-path-field"
+          >数据库路径<input
+            id="database-path-input"
+            name="path"
+            required
+            placeholder="例如：data\\orders.sqlite"
+        /></label>
+        <label id="database-upload-field" class="hidden"
+          >上传 SQLite 文件<input
+            id="database-upload-input"
+            name="databaseFile"
+            type="file"
+            disabled
+            accept=".db,.db3,.sqlite,.sqlite3,application/vnd.sqlite3,application/x-sqlite3"
+        /></label>
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-close-dialog
+          >
+            取消</button
+          ><button class="button button-primary" type="submit">
+            登记并打开
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="table-dialog">
+      <form id="table-form" method="dialog" class="dialog-card wide-dialog">
+        <div class="dialog-header">
+          <div>
+            <span class="eyebrow">表结构</span>
+            <h2>新建数据表</h2>
+          </div>
+          <button
+            class="icon-button"
+            type="button"
+            data-close-dialog
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </div>
+        <label
+          >表名<input
+            name="name"
+            required
+            pattern="[A-Za-z_][A-Za-z0-9_]*"
+            placeholder="例如：users"
+        /></label>
+        <div class="form-section-heading">
+          <span>字段</span
+          ><button id="add-column-button" class="text-button" type="button">
+            + 添加字段
+          </button>
+        </div>
+        <div id="column-editor" class="column-editor"></div>
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-close-dialog
+          >
+            取消</button
+          ><button class="button button-primary" type="submit">
+            创建数据表
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="schema-dialog">
+      <form id="schema-form" method="dialog" class="dialog-card wide-dialog">
+        <div class="dialog-header">
+          <div>
+            <span class="eyebrow">字段定义</span>
+            <h2 id="schema-dialog-title">表设计</h2>
+          </div>
+          <button
+            class="icon-button"
+            type="button"
+            data-close-dialog
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </div>
+        <p>保存会重建此表并迁移保留字段的数据，请先备份数据库。</p>
+        <div class="schema-scroll">
+          <table class="data-table schema-table">
+            <thead>
+              <tr>
+                <th>字段名</th>
+                <th>类型</th>
+                <th>主键</th>
+                <th>非空</th>
+                <th>默认值</th>
+                <th aria-label="操作"></th>
+              </tr>
+            </thead>
+            <tbody id="schema-columns"></tbody>
+          </table>
+        </div>
+        <button id="add-schema-column-button" class="text-button" type="button">
+          + 添加字段
+        </button>
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-close-dialog
+          >
+            取消
+          </button>
+          <button class="button button-primary" type="submit">保存表设计</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="row-dialog">
+      <form id="row-form" method="dialog" class="dialog-card wide-dialog">
+        <div class="dialog-header">
+          <div>
+            <span id="row-dialog-eyebrow" class="eyebrow">数据记录</span>
+            <h2 id="row-dialog-title">新增记录</h2>
+          </div>
+          <button
+            class="icon-button"
+            type="button"
+            data-close-dialog
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </div>
+        <div id="row-fields" class="row-fields"></div>
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-close-dialog
+          >
+            取消</button
+          ><button class="button button-primary" type="submit">保存记录</button>
+        </div>
+      </form>
+    </dialog>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

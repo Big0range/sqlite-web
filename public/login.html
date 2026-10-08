@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登录 · SQLite 管理台</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .login-page {
+        display: grid;
+        min-height: 100dvh;
+        place-items: center;
+        padding: 24px;
+        background: var(--canvas);
+      }
+      .login-card {
+        width: min(100%, 420px);
+        padding: 32px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+      .login-card h1 {
+        margin: 6px 0 10px;
+        font-family: Georgia, serif;
+        font-size: 32px;
+      }
+      .login-card p {
+        margin: 0 0 24px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .login-form {
+        display: grid;
+        gap: 16px;
+      }
+      .login-form label {
+        display: grid;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .login-form input {
+        min-height: 42px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        color: var(--ink);
+        background: white;
+        outline-color: var(--accent);
+      }
+      .login-form .button {
+        width: 100%;
+      }
+      .login-message {
+        min-height: 20px;
+        margin: 0;
+        color: var(--danger);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body class="login-page">
+    <main class="login-card">
+      <span class="eyebrow">SQLite 管理台</span>
+      <h1>登录管理台</h1>
+      <p>请输入管理员账号和密码。</p>
+      <form id="login-form" class="login-form">
+        <label>账号<input name="username" autocomplete="username" required /></label>
+        <label
+          >密码<input
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+        /></label>
+        <p id="login-message" class="login-message" role="alert"></p>
+        <button class="button button-primary" type="submit">登录</button>
+      </form>
+    </main>
+    <script type="module" src="/login.js"></script>
+  </body>
+</html>
